@@ -19,18 +19,6 @@ end
 
 
 
-
-
-class CheckMove
-
-
-
-end
-
-
-
-
-
 class Piece
 
   attr_reader :pos_origen, :pos_final
@@ -40,60 +28,157 @@ class Piece
     @pos_origen = pos_origen
     @pos_final = pos_final
 
+
   end
 
 
 end
 
-class Rook < Piece
+module CheckHorVer
 
-  #la torre se mueve como sea jsoijcsidjcci
-  def check
+  def check_hor_ver
 
     mov = ""
-    compare = @pos_origen & @pos_final
+    compare_hor_ver = @pos_origen & @pos_final
 
-    if !compare.empty?
+    if !compare_hor_ver.empty?
 
-      mov = "LEGAL"
+      mov = true
 #binding.pry
     else
 
-      mov = "ILEGAL"
+      mov = false
 
     end
 
-    puts mov
+    return mov
 
   end
 
 end
 
-class Bishop < Piece
+module CheckDiagonal
 
-  def check 
+  def check_diagonal
 
     mov = ""
-    compare = ((@pos_origen[0] - pos_final[0]).abs) - ((@pos_origen[1] - pos_final[1]).abs)
+    @compare_bishop_position = ((@pos_origen[0] - pos_final[0]).abs) - ((@pos_origen[1] - pos_final[1]).abs)
   
-    if compare == 0
+    if @compare_bishop_position == 0
 
-      mov = "LEGAL"
+      mov = true
 
     else
 
-      mov = "ILEGAL"
+      mov = false
 
     end
 
-    puts mov
+    return mov
 
   end
 
 end
 
 
-torre = Rook.new([7, 3], [7, 1])
-torre.check
 
+
+class Rook < Piece
+
+  include CheckHorVer
+
+  def check_move
+
+    if check_hor_ver == true
+
+      puts "LEGAL"
+
+    elsif check_hor_ver == false
+
+      puts "ILEGAL"
+
+    end
+
+  end
+
+end
+
+
+class Bishop < Piece
+
+  include CheckDiagonal
+
+  def check_move
+
+    if check_diagonal == true
+
+      puts "LEGAL"
+
+    elsif check_diagonal == false
+
+      puts "ILEGAL"
+
+    end
+
+  end
+
+end
+
+class Queen < Piece
+
+  include CheckHorVer
+  include CheckDiagonal
+
+  def check_move
+
+    if (check_hor_ver == true) || (check_diagonal == true) 
+
+      puts "LEGAL"
+
+    else
+
+      puts "ILEGAL"
+
+  end
+
+end
+
+end
+
+class King < Piece
+
+  include CheckHorVer
+
+  def check_move
+
+    mov_king = []
+    mov_king[0] = (@pos_origen[0] + 1)
+    mov_king[1] = (@pos_origen[1] + 1) 
+binding.pry
+    if (check_hor_ver == true) && ((mov_king[0] == @pos_final[0]) || (mov_king[1] == @pos_final[1]))
+
+    puts "legal"
+
+    else
+
+    puts "ilegal" 
+
+    end  
+
+  end
+
+end
+
+
+#torre = Rook.new([7, 3], [7, 1]) #LEGAL
+#torre.check_move
+
+#alfil = Bishop.new([8, 4], [4, 8]) #LEGAL
+#alfil.check_move
+
+#reina = Queen.new([3, 3], [4, 8]) #iLEGAL
+#reina.check_move
+
+rey = King.new([1,1], [2,1])
+rey.check_move
 
