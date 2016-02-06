@@ -28,7 +28,6 @@ class Piece
     @pos_origen = pos_origen
     @pos_final = pos_final
 
-
   end
 
 
@@ -38,20 +37,17 @@ module CheckHorVer
 
   def check_hor_ver
 
-    mov = ""
     compare_hor_ver = @pos_origen & @pos_final
 
     if !compare_hor_ver.empty?
 
-      mov = true
+      return true
 #binding.pry
     else
 
-      mov = false
+      return false
 
     end
-
-    return mov
 
   end
 
@@ -61,26 +57,43 @@ module CheckDiagonal
 
   def check_diagonal
 
-    mov = ""
     @compare_bishop_position = ((@pos_origen[0] - pos_final[0]).abs) - ((@pos_origen[1] - pos_final[1]).abs)
   
     if @compare_bishop_position == 0
 
-      mov = true
+      return true
 
     else
 
-      mov = false
+      return false
 
     end
-
-    return mov
 
   end
 
 end
 
+module CheckOneMove
 
+  def check_one_move
+
+    mov_king = []
+    mov_king[0] = (@pos_origen[0] + 1)
+    mov_king[1] = (@pos_origen[1] + 1) 
+
+    if (mov_king[0] == @pos_final[0]) || (mov_king[1] == @pos_final[1])
+
+      return true
+
+    else
+
+      return false
+
+    end
+
+  end
+
+end
 
 
 class Rook < Piece
@@ -148,14 +161,11 @@ end
 class King < Piece
 
   include CheckHorVer
+  include CheckOneMove
 
   def check_move
 
-    mov_king = []
-    mov_king[0] = (@pos_origen[0] + 1)
-    mov_king[1] = (@pos_origen[1] + 1) 
-binding.pry
-    if (check_hor_ver == true) && ((mov_king[0] == @pos_final[0]) || (mov_king[1] == @pos_final[1]))
+    if (check_hor_ver == true) && (check_one_move == true)
 
     puts "legal"
 
@@ -164,6 +174,52 @@ binding.pry
     puts "ilegal" 
 
     end  
+
+  end
+
+end
+
+class Horse < Piece
+
+  def check_move
+
+    hyp = Math.hypot(1, 2)
+
+    arr_horse = []
+    arr_horse[0] = @pos_final[0] - @pos_origen[0]
+    arr_horse[1] = @pos_final[1] - @pos_origen[1]
+
+    hyp_arr_horse = Math.hypot(arr_horse[0], arr_horse[1])
+
+    if hyp == hyp_arr_horse
+
+      puts "LegaL"
+
+    else
+
+      puts "iLEgaL"
+
+  end
+
+end
+
+end
+
+class Pawn < Piece
+
+  include CheckOneMove
+
+  def check_move
+
+  if check_one_move == true
+
+    puts "Leeeeeegal"
+
+  else
+
+    puts "IIIIIIllegal"
+
+  end
 
   end
 
@@ -179,6 +235,11 @@ end
 #reina = Queen.new([3, 3], [4, 8]) #iLEGAL
 #reina.check_move
 
-rey = King.new([1,1], [2,1])
+rey = King.new([7,1], [2,1])#ilegal
 rey.check_move
 
+caballo = Horse.new([4, 4], [5, 2])#legal
+caballo.check_move
+
+peon = Pawn.new([1, 1], [2, 1])
+peon.check_move
